@@ -27,14 +27,13 @@ table, th, td {
   </tr>
   <tr>
     <td><label>Status: </label></td>
-    <td><input type="text" id="status"></td>
+    <td><input type="text" id="status" disabled></td>
   </tr>
   <tr>
     <td></td>
     <td><button onclick="addNewTodo()">SUBMIT</button></td>
   </tr>
 </table>
-
 
 <table id="todoTable">
   <tr>
@@ -43,7 +42,6 @@ table, th, td {
     <th>ToDo Desc</th>
     <th>Target Date</th>
     <th>Status</th>
-    <th>Edit</th>
   </tr>
   <tbody>
   </tbody>
@@ -51,26 +49,24 @@ table, th, td {
 
 <script>
   var todoList=[{
-                    todoId:101,
-                    currentDate : "2025-07-29 ",
-                    todoDesc : "Read Page 6",
-                    targetDate : "2025-07-30 11:35",
-                    todoStatus : "PENDING"
-                },
-                {
-                    todoId:102,
-                    currentDate : "2025-07-29 ",
-                    todoDesc : "Write a document",
-                    targetDate : "2025-07-30 12:40",
-                    todoStatus : "COMPLETE",
-                },
-                {
-                    todoId:103,
-                    currentDate : "2025-07-29",
-                    todoDesc : "Prepare a Presentation",
-                    targetDate : "2025-07-30 1:40",
-                    todoStatus : "IN-PROGRESS",
-                }];
+    todoId:101,
+    todoDesc : "submit to-do",
+    targetDate : "2025-07-31 11:35",
+    todoStatus : "PENDING",
+    createDate : "2025-07-31 04:49"
+  }, {
+    todoId:102,
+    todoDesc : "prepare document",
+    targetDate : "2025-07-31 12:40",
+    todoStatus : "COMPLETE",
+    createDate : "2025-07-31 05:00"
+  }, {
+    todoId:103,
+    todoDesc : "practice",
+    targetDate : "2025-07-31 1:40",
+    todoStatus : "IN-PROGRESS",
+    createDate : "2025-07-31 06:00"
+  }];
 
   function getMaxTodoId(max, value, index, array) {
     return max.todoId > value.todoId ? max : value;
@@ -82,7 +78,7 @@ table, th, td {
   var todoId = maxObj.todoId;
 
   function renderListTable(value, index, array){
-    console.log(value.todoId+"\n"+value.currentDate+"\n"+value.todoDesc + "\n"+value.targetDate+"\n"+value.todoStatus);
+    console.log(value.todoId+"\n"+value.todoDesc + "\n"+value.targetDate+"\n"+value.todoStatus+"\n"+value.createDate);
     var newTodoTr = document.createElement("tr");
     var newTodoIdTd = document.createElement("td");
     newTodoIdTd.innerText = value.todoId;
@@ -93,22 +89,13 @@ table, th, td {
     var newTodoTargetDateTd = document.createElement("td");
     newTodoTargetDateTd.innerText = value.targetDate;
     var newTodoStatusTd = document.createElement("td");
-    newTodoStatusTd.innerText = value.todoStatus;
-    var newTodoEditTd=document.createElement("td");
-    var newEditButtonTd = document.createElement("button");
-    newEditButtonTd.innerText = "Edit";
+    newTodoStatusTd.innerText = "Pending";
 
     newTodoTr.appendChild(newTodoIdTd);
     newTodoTr.appendChild(newTodoCurrentDateTd);
     newTodoTr.appendChild(newTodoDescTd);
     newTodoTr.appendChild(newTodoTargetDateTd);
     newTodoTr.appendChild(newTodoStatusTd);
-    newTodoTr.appendChild(newTodoEditTd);
-    newTodoEditTd.appendChild(newEditButtonTd);
-2
-    newEditButtonTd.onclick=function(){
-        console.log("Edit button clicked");
-    }
 
     var todoTable = document.getElementById("todoTable");
         todoTable.appendChild(newTodoTr);
