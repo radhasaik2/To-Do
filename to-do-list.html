@@ -27,7 +27,7 @@ table, th, td {
   </tr>
   <tr>
     <td><label>Status: </label></td>
-    <td><input type="text" id="status" disabled></td>
+    <td><input type="text" id="status"></td>
   </tr>
   <tr>
     <td></td>
@@ -35,12 +35,15 @@ table, th, td {
   </tr>
 </table>
 
+
 <table id="todoTable">
   <tr>
     <th>ID</th>
+    <th>Current Date</th>
     <th>ToDo Desc</th>
     <th>Target Date</th>
     <th>Status</th>
+    <th>Edit</th>
   </tr>
   <tbody>
   </tbody>
@@ -48,21 +51,26 @@ table, th, td {
 
 <script>
   var todoList=[{
-    todoId:100,
-    todoDesc : "submit to-do",
-    targetDate : "2025-07-30 11:35",
-    todoStatus : "PENDING"
-  }, {
-    todoId:101,
-    todoDesc : "prepare document",
-    targetDate : "2025-07-30 12:40",
-    todoStatus : "COMPLETE"
-  }, {
-    todoId:102,
-    todoDesc : "practice",
-    targetDate : "2025-07-30 1:40",
-    todoStatus : "IN-PROGRESS"
-  }];
+                    todoId:101,
+                    currentDate : "2025-07-29 ",
+                    todoDesc : "Read Page 6",
+                    targetDate : "2025-07-30 11:35",
+                    todoStatus : "PENDING"
+                },
+                {
+                    todoId:102,
+                    currentDate : "2025-07-29 ",
+                    todoDesc : "Write a document",
+                    targetDate : "2025-07-30 12:40",
+                    todoStatus : "COMPLETE",
+                },
+                {
+                    todoId:103,
+                    currentDate : "2025-07-29",
+                    todoDesc : "Prepare a Presentation",
+                    targetDate : "2025-07-30 1:40",
+                    todoStatus : "IN-PROGRESS",
+                }];
 
   function getMaxTodoId(max, value, index, array) {
     return max.todoId > value.todoId ? max : value;
@@ -74,21 +82,33 @@ table, th, td {
   var todoId = maxObj.todoId;
 
   function renderListTable(value, index, array){
-    console.log(value.todoId+"\n"+value.todoDesc + "\n"+value.targetDate+"\n"+value.todoStatus);
+    console.log(value.todoId+"\n"+value.currentDate+"\n"+value.todoDesc + "\n"+value.targetDate+"\n"+value.todoStatus);
     var newTodoTr = document.createElement("tr");
     var newTodoIdTd = document.createElement("td");
     newTodoIdTd.innerText = value.todoId;
+    var newTodoCurrentDateTd = document.createElement("td");
+    newTodoCurrentDateTd.innerText = value.currentDate;
     var newTodoDescTd = document.createElement("td");
     newTodoDescTd.innerText = value.todoDesc;
     var newTodoTargetDateTd = document.createElement("td");
     newTodoTargetDateTd.innerText = value.targetDate;
     var newTodoStatusTd = document.createElement("td");
-    newTodoStatusTd.innerText = "Pending";
+    newTodoStatusTd.innerText = value.todoStatus;
+    var newTodoEditTd=document.createElement("td");
+    var newEditButtonTd = document.createElement("button");
+    newEditButtonTd.innerText = "Edit";
 
     newTodoTr.appendChild(newTodoIdTd);
+    newTodoTr.appendChild(newTodoCurrentDateTd);
     newTodoTr.appendChild(newTodoDescTd);
     newTodoTr.appendChild(newTodoTargetDateTd);
     newTodoTr.appendChild(newTodoStatusTd);
+    newTodoTr.appendChild(newTodoEditTd);
+    newTodoEditTd.appendChild(newEditButtonTd);
+2
+    newEditButtonTd.onclick=function(){
+        console.log("Edit button clicked");
+    }
 
     var todoTable = document.getElementById("todoTable");
         todoTable.appendChild(newTodoTr);
@@ -99,17 +119,19 @@ table, th, td {
     }
     renderTodoItems(todoList);
 
-  function addNewTodo(todoDesc, targetDate, todoStatus,inprogress,complete) {
+  function addNewTodo(todoDesc,currentDate,targetDate,todoStatus) {
+        currentDate = document.getElementById("date").value;
         todoDesc = document.getElementById("todo").value;
         targetDate = document.getElementById("target").value;
         todoStatus = document.getElementById("status").value;
         todoId++;
-        console.log(todoId+"\n"+todoDesc + "\n"+targetDate+"\n"+todoStatus);
+        console.log(todoId+"\n"+currentDate + "\n"+targetDate+"\n"+todoStatus);
 
     var todo={};
     todo.todoId =todoId;
+    todo.currentDate =currentDate;
     todo.todoDesc =todoDesc;
-    todo.targetDate = targetDate;
+    todo.targetDate = targetDate.replace('T', ' ');
     todo.todoStatus = todoStatus;
     todoList.push(todo);
     
