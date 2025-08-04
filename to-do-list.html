@@ -4,7 +4,6 @@
 <title>To-Do List</title>
 <style>
 table, th, td {
-  border: 0px solid green;
   border-collapse: collapse;
   padding: 6px;
 }
@@ -12,6 +11,8 @@ table, th, td {
 </head>
 <body>
 
+<!-- defining required html elements for to-do-list to give value 
+ & table for proper alignment of tags/elements -->
 <table>
   <tr>
     <td><label>Date:</label></td>
@@ -26,15 +27,12 @@ table, th, td {
     <td><input type="datetime-local" id="target"></td>
   </tr>
   <tr>
-    <td><label>Status: </label></td>
-    <td><input type="text" id="status" disabled></td>
-  </tr>
-  <tr>
     <td></td>
     <td><button onclick="addNewTodo()">SUBMIT</button></td>
   </tr>
 </table>
 
+<!-- to-do- list table to store the tasks -->
 <table id="todoTable">
   <tr>
     <th>ID</th>
@@ -42,43 +40,50 @@ table, th, td {
     <th>ToDo Desc</th>
     <th>Target Date</th>
     <th>Status</th>
+    <th>Edit</th>
   </tr>
   <tbody>
   </tbody>
 </table>
 
 <script>
+//user created object-array to displayed on html page as existing tasks
   var todoList=[{
-    todoId:101,
-    todoDesc : "submit to-do",
-    targetDate : "2025-07-31 11:35",
-    todoStatus : "PENDING",
-    createDate : "2025-07-31 04:49"
-  }, {
-    todoId:102,
-    todoDesc : "prepare document",
-    targetDate : "2025-07-31 12:40",
-    todoStatus : "COMPLETE",
-    createDate : "2025-07-31 05:00"
-  }, {
-    todoId:103,
-    todoDesc : "practice",
-    targetDate : "2025-07-31 1:40",
-    todoStatus : "IN-PROGRESS",
-    createDate : "2025-07-31 06:00"
-  }];
+                    todoId:101,
+                    currentDate : "2025-07-31",
+                    todoDesc : "prepare to-do-list",
+                    targetDate : "2025-07-31 11:35",
+                    todoStatus : "PENDING"
+                },
+                {
+                    todoId:102,
+                    currentDate : "2025-07-31",
+                    todoDesc : "Write a document",
+                    targetDate : "2025-07-31 12:40",
+                    todoStatus : "COMPLETE",
+                },
+                {
+                    todoId:103,
+                    currentDate : "2025-08-01",
+                    todoDesc : "Practice",
+                    targetDate : "2025-08-01 01:40",
+                    todoStatus : "INPROGRESS",
+                }];
 
+//getting the index of new element using ternary operator and returning the
+//max id to assign it the next new task/list as id
   function getMaxTodoId(max, value, index, array) {
     return max.todoId > value.todoId ? max : value;
   }
-
   console.log("max Obj :"+todoList.reduce(getMaxTodoId));
   var maxObj =todoList.reduce(getMaxTodoId);
   console.log("max Id :"+maxObj.todoId);
   var todoId = maxObj.todoId;
 
+//assigning value to table from html using DOM and creating new element 
+//everytime a new value is added in to the existing table 
   function renderListTable(value, index, array){
-    console.log(value.todoId+"\n"+value.todoDesc + "\n"+value.targetDate+"\n"+value.todoStatus+"\n"+value.createDate);
+    console.log(value.todoId+"\n"+value.currentDate+"\n"+value.todoDesc + "\n"+value.targetDate+"\n"+value.todoStatus);
     var newTodoTr = document.createElement("tr");
     var newTodoIdTd = document.createElement("td");
     newTodoIdTd.innerText = value.todoId;
@@ -89,43 +94,147 @@ table, th, td {
     var newTodoTargetDateTd = document.createElement("td");
     newTodoTargetDateTd.innerText = value.targetDate;
     var newTodoStatusTd = document.createElement("td");
-    newTodoStatusTd.innerText = "Pending";
+    newTodoStatusTd.innerText = value.todoStatus;
+    var newTodoStatusInProgressBtnTd = document.createElement("td");
+    var newInProgressBtn = document.createElement("button");
+    newInProgressBtn.innerText = "INPROGRESS";
+    var newTodoStatusCompleteBtnTd = document.createElement("td");
+    var newCompleteBtn = document.createElement("button");
+    newCompleteBtn.innerText = "COMPLETE";
+    var newTodoEditBtnTd = document.createElement("td");
+    var newEditBtn = document.createElement("button");
+    newEditBtn.innerText = "EDIT";
 
-    newTodoTr.appendChild(newTodoIdTd);
-    newTodoTr.appendChild(newTodoCurrentDateTd);
-    newTodoTr.appendChild(newTodoDescTd);
-    newTodoTr.appendChild(newTodoTargetDateTd);
-    newTodoTr.appendChild(newTodoStatusTd);
+//invoking function definition to add a new value on click and  update the status of the task
+    newInProgressBtn.onclick = function() {
+      value.todoStatus = "INPROGRESS";
+      newTodoStatusTd.innerText = "INPROGRESS";
+      this.disabled = true;
+      newCompleteBtn.disabled = false;
+    };
+    newCompleteBtn.onclick = function() {
+      value.todoStatus = "COMPLETE";
+      newTodoStatusTd.innerText = "COMPLETE";
+      this.disabled = true;
+      newInProgressBtn.disabled = true;
+    };
+    newEditBtn.onclick = function() {
+        editTodoItem(value, newTodoIdTd, newTodoCurrentDateTd, newTodoDescTd, newTodoTargetDateTd);
+    };
 
-    var todoTable = document.getElementById("todoTable");
-        todoTable.appendChild(newTodoTr);
+//change of the update on click of the button and enabling-disabling of already clicked button
+//using switch case to change the status of the task i.e. enabling/disabling of inprogress & complete buttons by onclick event to update the status
+    switch(value.todoStatus) {
+               case "PENDING":
+                    newInProgressBtn.disabled = false;
+                    newCompleteBtn.disabled = true;
+                    break;
+                case "INPROGRESS":
+                    newInProgressBtn.disabled = true;
+                    newCompleteBtn.disabled = false;
+                    break;
+                case "COMPLETE":
+                    newInProgressBtn.disabled = true;
+                    newCompleteBtn.disabled = true;
+                    break;
     }
 
+//appending the child i.e. new created element with it's {tr row with td description}
+            newTodoTr.appendChild(newTodoIdTd);
+            newTodoTr.appendChild(newTodoCurrentDateTd);
+            newTodoTr.appendChild(newTodoDescTd);
+            newTodoTr.appendChild(newTodoTargetDateTd);
+            newTodoTr.appendChild(newTodoStatusTd);
+            newTodoTr.appendChild(newTodoStatusInProgressBtnTd);
+            newTodoTr.appendChild(newTodoStatusCompleteBtnTd);
+            newTodoTr.appendChild(newTodoEditBtnTd);
+            newTodoStatusInProgressBtnTd.appendChild(newInProgressBtn);
+            newTodoStatusCompleteBtnTd.appendChild(newCompleteBtn);
+            newTodoEditBtnTd.appendChild(newEditBtn);
+            
+
+            var todoTable = document.getElementById("todoTable"); //getting the value i.e task list of the table
+            todoTable.appendChild(newTodoTr);
+          }
+//using foreach to enter each object that already exists in user create object array 
+// with new table to allow to add to new list of elements from html
     function renderTodoItems(todoList){
-        todoList.map(renderListTable);
+        var tbody = document.getElementById("todoTable");
+        tbody.innerHTML = "";      // Clears already existing rows
+        todoList.forEach(renderListTable);
     }
-    renderTodoItems(todoList);
 
+// fetching/getting the value of elements from html using DOM 
   function addNewTodo(todoDesc,currentDate,targetDate,todoStatus) {
         currentDate = document.getElementById("date").value;
         todoDesc = document.getElementById("todo").value;
         targetDate = document.getElementById("target").value;
-        todoStatus = document.getElementById("status").value;
         todoId++;
-        console.log(todoId+"\n"+currentDate + "\n"+targetDate+"\n"+todoStatus);
 
+//object creating to add into to-do list
     var todo={};
     todo.todoId =todoId;
     todo.currentDate =currentDate;
     todo.todoDesc =todoDesc;
     todo.targetDate = targetDate.replace('T', ' ');
-    todo.todoStatus = todoStatus;
+    todo.todoStatus = "PENDING";
     todoList.push(todo);
-    
+
+//create an array with new added list/task into already existing table   
     renderListTable(todo); 
     console.log(todoList);
-  }
-</script>
+}
+     
+// Create input fields/elements for editing to enter new task of list in specified/required field
+// creating a new element i.e. save button to save the changes and update by onclick event
+  function editTodoItem(todo, idTd, dateTd, descTd, targetTd) {
+            var newTodoIdInput = document.createElement("input");
+            newTodoIdInput.type = "text";
+            newTodoIdInput.value = todo.todoId;
+            var newCurrentDateInput = document.createElement("input");
+            newCurrentDateInput.type = "date";
+            newCurrentDateInput.value = todo.currentDate;
+            var newTodoDescInput = document.createElement("input");
+            newTodoDescInput.type = "text";
+            newTodoDescInput.value = todo.todoDesc;
+            var newTargetDateInput = document.createElement("input");
+            newTargetDateInput.type = "datetime-local";
+            newTargetDateInput.value = todo.targetDate.replace(' ', 'T'); 
+            var saveBtn = document.createElement("button");
+            saveBtn.innerText = "Save";
 
+//function definition to save the changes on click of save button and updating the 
+//new list of tasks to object-array with new value/list
+            saveBtn.onclick = function() {
+            todo.todoId = newTodoIdInput.value;
+            todo.currentDate = newCurrentDateInput.value;
+            todo.todoDesc = newTodoDescInput.value;
+            todo.targetDate = newTargetDateInput.value.replace('T', ' ');
+
+//changes/updating of new list of tasks to be editted that created by html tags
+                idTd.innerText = todo.todoId;
+                dateTd.innerText = todo.currentDate;
+                descTd.innerText = todo.todoDesc;
+                targetTd.innerText = todo.targetDate;
+
+                renderTodoItems(todoList);
+            };
+
+// Replacing the already exisiting list of tasks with new list by new input tags/fields
+//  and save button to update the changes
+            idTd.innerHTML = "";
+            idTd.appendChild(newTodoIdInput);
+            dateTd.innerHTML = "";
+            dateTd.appendChild(newCurrentDateInput);
+            descTd.innerHTML = "";
+            descTd.appendChild(newTodoDescInput);
+            targetTd.innerHTML = "";
+            targetTd.appendChild(newTargetDateInput);
+            targetTd.appendChild(saveBtn);
+        }
+
+        renderTodoItems(todoList);
+
+</script>
 </body>
 </html>
