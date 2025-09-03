@@ -30,5 +30,12 @@ insert into todoitems value(104,"2025-09-01 01-45-00","create a database","2025-
 alter table todoitems
 modify column todoId int auto_increment;
 
+alter table todoitems
+add column credited_by varchar(20) default "admin",
+add column credited_date date default "2025-09-01",
+add column modified_by varchar(20) null,
+add column modified_date datetime default "2025-09-01 07-00-00";
+
 select * from todoitems;
+
 
