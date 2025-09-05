@@ -1,24 +1,22 @@
-package in.todoservlet;
+package in.todoservletproject;
 
-import java.util.Date;
-
-public class Todoitemsmain {
-
+public class Tododto {
 	private int todoId;
-	private Date currentDate;
-	private String todoDesc;
-	private Date targetDate;
-	private String todoStatus;
+    private String currentDate;
+    private String todoDesc;
+    private String targetDate;
+    private String todoStatus;
+    
 	public int getTodoId() {
 		return todoId;
 	}
 	public void setTodoId(int todoId) {
 		this.todoId = todoId;
 	}
-	public Date getCurrentDate() {
+	public String getCurrentDate() {
 		return currentDate;
 	}
-	public void setCurrentDate(Date currentDate) {
+	public void setCurrentDate(String currentDate) {
 		this.currentDate = currentDate;
 	}
 	public String getTodoDesc() {
@@ -27,10 +25,10 @@ public class Todoitemsmain {
 	public void setTodoDesc(String todoDesc) {
 		this.todoDesc = todoDesc;
 	}
-	public Date getTargetDate() {
+	public String getTargetDate() {
 		return targetDate;
 	}
-	public void setTargetDate(Date targetDate) {
+	public void setTargetDate(String targetDate) {
 		this.targetDate = targetDate;
 	}
 	public String getTodoStatus() {
@@ -38,9 +36,6 @@ public class Todoitemsmain {
 	}
 	public void setTodoStatus(String todoStatus) {
 		this.todoStatus = todoStatus;
-	}
-	
-	
-
-
+	} 
+    
 }
