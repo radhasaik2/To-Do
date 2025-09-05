@@ -1,41 +1,54 @@
-create database todoitems;
-use todoitems;
-create table todoitems (
-todoId int primary key,
-currentDate datetime,
-todoDesc varchar(150),
-targetDate datetime,
-todoStatus varchar(20) default "PENDING"
+CREATE DATABASE todo_db;
+USE todo_db;
+
+create table todo_items (
+    todoId int primary key auto_increment,
+    currentDate date not null,
+    todoDesc varchar(175) not null,
+    targetDate datetime not null,
+    todoStatus varchar(20) default 'PENDING',
+    credited_by varchar(35) default 'admin',
+    credited_date datetime default (now()),
+    modified_by varchar(35) null,
+    modified_date datetime default (now())
 );
 
-insert into todoitems (currentDate,todoDesc,targetDate)
-values
-("2025-09-01 01-45-00","create a database","2025-09-02 05-30-00"),
-("2025-09-01 01-45-00","creating dao and dto","2025-09-03 01-00-00"),
-("2025-09-01 01-45-00","trying to execute the servlet project","2025-09-03 02-45-00");
+INSERT INTO todo_items (currentDate, todoDesc, targetDate, todoStatus, credited_by)
+VALUES 
+    (CURRENT_DATE, 'Complete project documentation', '2024-01-15 09-00-01', 'PENDING', 'admin'),
+    (CURRENT_DATE, 'Review code changes', '2024-01-12 11-11-09', 'developer'),
+    (CURRENT_DATE, 'Prepare meeting agenda', '2024-01-10 05-05-05', 'COMPLETE', 'manager');
 
--- alter table todoitems
--- modify column todoStatus enum("PENDING","IN_PROGRESS","COMPLETE") default "PENDING";
+INSERT INTO todo_items (currentDate, todoDesc, targetDate,credited_by)
+VALUES(CURRENT_DATE, 'Review code changes', '2024-07-17 10-56-08', 'admin');
 
--- insert into todoitems value(104,"2025-09-01 01-45-00","create a database","2025-09-02 05-30-00","IN_PROGRESS");
--- insert into todoitems value(105,"2025-09-01 01-45-00","create a database","2025-09-02 05-30-00","COMPLETE");
+alter table todo_items
+drop column user_id;
 
-delete from todoitems where todoId=104;
-
-alter table todoitems
+alter table todo_items
 modify column todoStatus enum("PENDING","IN-PROGRESS","COMPLETE") default "PENDING";
 
-insert into todoitems value(104,"2025-09-01 01-45-00","create a database","2025-09-02 05-30-00","IN-PROGRESS");
+alter table todo_items
+add column userId int ,
+add foreign key(userId) references user_auth(userId);
 
-alter table todoitems
-modify column todoId int auto_increment;
+SELECT * FROM todo_items;
 
-alter table todoitems
-add column credited_by varchar(20) default "admin",
-add column credited_date date default "2025-09-01",
-add column modified_by varchar(20) null,
-add column modified_date datetime default "2025-09-01 07-00-00";
+create table user_auth (
+userId int primary key auto_increment,
+username varchar(30) unique, 
+userPassword varchar(10),
+userFirstname varchar(10),
+userLastname varchar(10)
+);
 
-select * from todoitems;
+insert into user_auth(username,userPassword,userFirstname,userLastname)
+values("radha@05","password@0","radha","sai");
 
+alter table user_auth
+modify column userLastname varchar(10) null;
 
+insert into user_auth(username,userPassword,userFirstname,userLastname)
+values("sai@13","password","sai","");
+
+select * from user_auth;
