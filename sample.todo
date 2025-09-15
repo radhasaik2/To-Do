@@ -1,0 +1,242 @@
+package in.servletproj.todolist;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+
+@WebServlet("/Todolistservlet")
+public class Todolistservlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    // ... (htmlHeader and htmlFooter as before) ...
+
+    private String buildTodoTableRows(List<Todolistdto> todos) {
+        StringBuilder sb = new StringBuilder();
+        for (Todolistdto todo : todos) {
+            sb.append("<tr>");
+            sb.append("<td>").append(todo.getTodoid()).append("</td>");
+            sb.append("<td>").append(todo.getCurrentdate()).append("</td>");
+            sb.append("<td>").append(escapeHtml(todo.getTododesc())).append("</td>");
+            sb.append("<td>").append(todo.getTargetdate() != null ? todo.getTargetdate() : "").append("</td>");
+            sb.append("<td>").append(todo.getTodostatus()).append("</td>");
+            sb.append("<td><button disabled>Edit</button></td>");
+            sb.append("</tr>");
+        }
+        return sb.toString();
+    }
+
+    private String escapeHtml(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                .replace("\"", "&quot;").replace("'", "&#39;");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<Todolistdto> todos = Todolistdao.getAllTodos();
+        String tableRows = buildTodoTableRows(todos);
+
+        StringBuilder page = new StringBuilder();
+        page.append(htmlHeader);
+        page.append(tableRows);
+        page.append(htmlFooter);
+
+        response.setContentType("text/html");
+        response.getWriter().write(page.toString());
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String currentDate = request.getParameter("date");
+        String todoDesc = request.getParameter("desc");
+        String targetDateRaw = request.getParameter("Target");
+        String status = request.getParameter("status");
+
+        String targetDate = null;
+        if (targetDateRaw != null && !targetDateRaw.isEmpty()) {
+            targetDate = targetDateRaw.replace("T", " ");
+            if (!targetDate.endsWith(":00")) {
+                targetDate += ":00";
+            }
+        }
+
+        if (status == null || status.isEmpty()) {
+            status = "PENDING";
+        }
+
+        Todolistdto todo = new Todolistdto();
+        todo.setCurrentdate(currentDate);
+        todo.setTododesc(todoDesc);
+        todo.setTargetdate(targetDate);
+        todo.setTodostatus(status);
+
+        boolean inserted = Todolistdao.insertTodo(todo);
+
+        response.sendRedirect("Todolistservlet");
+    }
+}
+
+
+
+
+package in.servletproj.todolist;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Todolistdao {
+    private static final String URL = "jdbc:mysql://localhost:3306/todolist_db";
+    private static final String USER = "root";
+    private static final String PASSWORD = "root";
+
+    public static Connection getConnection() throws Exception {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+
+    public static boolean insertTodo(Todolistdto todo) {
+        String sql = "INSERT INTO todolist (currentdate, tododesc, targetdate, todostatus, credited_by) VALUES (?, ?, ?, ?, ?)";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDate(1, java.sql.Date.valueOf(todo.getCurrentdate())); 
+            ps.setString(2, todo.getTododesc());
+            ps.setString(3, todo.getTargetdate()); 
+            ps.setString(4, todo.getTodostatus() != null ? todo.getTodostatus() : "PENDING");
+            ps.setString(5, "Admin"); 
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public static List<Todolistdto> getAllTodos() {
+        List<Todolistdto> list = new ArrayList<>();
+        String sql = "SELECT todoid, currentdate, tododesc, targetdate, todostatus FROM todolist ORDER BY todoid";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Todolistdto todo = new Todolistdto();
+                todo.setTodoid(String.valueOf(rs.getInt("todoid")));
+                todo.setCurrentdate(rs.getDate("currentdate").toString());
+                todo.setTododesc(rs.getString("tododesc"));
+                Timestamp ts = rs.getTimestamp("targetdate");
+                if (ts != null) {
+                    todo.setTargetdate(sdf.format(ts));
+                } else {
+                    todo.setTargetdate(null);
+                }
+                todo.setTodostatus(rs.getString("todostatus"));
+                list.add(todo);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+}
+
+
+
+
+CREATE DATABASE todolist_db;
+USE todolist_db;
+
+create table todolist (
+    todoid int primary key auto_increment,
+    currentdate date not null,
+    tododesc varchar(175) not null,
+    targetdate datetime not null,
+    todostatus varchar(20) default 'PENDING',
+    credited_by varchar(35) default 'Admin' not null,
+    credited_date datetime default (now()),
+    modified_by varchar(35) null,
+    modified_date datetime default (now()) null
+);
+
+insert into todolist(currentdate, tododesc, targetdate,credited_by)
+values(current_date, 'Complete project documentation', '2024-01-15 09-00-01', 'Admin'),
+(current_date, 'Review code changes', '2024-01-12 11-11-09','Admin'),
+(current_date, 'Prepare for another project', '2024-01-10 05-05-05','Admin');
+
+select * from todolist;
+
+alter table todolist
+modify column todostatus enum("PENDING","IN-PROGRESS","COMPLETE") default "PENDING";
+
+alter table todo_items
+add column userId int ,
+add foreign key(userId) references user_auth(userId);
+
+
+
+create table users (
+userid int primary key auto_increment,
+username varchar(30) unique, 
+userpassword varchar(10) not null,
+userFirstname varchar(10) null,
+userLastname varchar(10) null
+);
+
+insert into users(username,userPassword)
+values("radha@05","password@0");
+
+select * from users;
+
+
+package in.servletproj.todolist;
+
+public class Todolistdto {
+	 	String todoid;
+	    String currentdate; 
+	    String tododesc; 
+	    String targetdate; 
+	    String todostatus;
+		public String getTodoid() {
+			return todoid;
+		}
+		public void setTodoid(String todoid) {
+			this.todoid = todoid;
+		}
+		public String getCurrentdate() {
+			return currentdate;
+		}
+		public void setCurrentdate(String currentdate) {
+			this.currentdate = currentdate;
+		}
+		public String getTododesc() {
+			return tododesc;
+		}
+		public void setTododesc(String tododesc) {
+			this.tododesc = tododesc;
+		}
+		public String getTargetdate() {
+			return targetdate;
+		}
+		public void setTargetdate(String targetdate) {
+			this.targetdate = targetdate;
+		}
+		public String getTodostatus() {
+			return todostatus;
+		}
+		public void setTodostatus(String todostatus) {
+			this.todostatus = todostatus;
+		} 
+	    
+	    
+
+}
+
