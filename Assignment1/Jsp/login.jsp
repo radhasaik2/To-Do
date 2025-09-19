@@ -8,10 +8,14 @@
 <title>Insert title here</title>
 </head>
 <body>
-<form action = "logindata" method = "post">
-  email<input type= "email" name="email"/>
-  password<input type= "text" name="password"/>    
-  <input type= "submit" value="submit" />
+<% if (request.getAttribute("error") != null) { %>
+    <p style="color: red;">${error}</p>
+<% } %>
+<form method="post" action="logindata">
+  Email: <input type="email" name="email" required/>
+  Password: <input type="password" name="password" required/>
+  <input type="submit" value="Submit" />
 </form>
+<p>Don't have an account? <a href="signup">Sign up here</a></p>
 </body>
 </html>
