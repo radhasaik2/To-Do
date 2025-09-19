@@ -58,12 +58,12 @@ public class Assignment {
                 return "login";
             }
             
-            Userdto dbUser = Assignment1dao.getUserByEmail(logs.getEmail());
+            Userdto Db=Assignment1dao.getUserByEmail(logs.getEmail());
             
-            if (dbUser != null && PasswordUtil.checkPassword(logs.getPassword(), dbUser.getPassword())) {
-                users.setUserid(dbUser.getUserid());
-                users.setName(dbUser.getName());
-                users.setEmail(dbUser.getEmail());
+            if (Db!= null && Passwordinfo.checkPassword(logs.getPassword(), Db.getPassword())) {
+                users.setUserid(Db.getUserid());
+                users.setName(Db.getName());
+                users.setEmail(Db.getEmail());
                 users.setPassword(""); 
                 model.addAttribute("user", users);
                 model.addAttribute("message", "User login successful");
@@ -77,7 +77,6 @@ public class Assignment {
             return "login";
         }
     }
-    
     @GetMapping("/profile")
     public String showProfile(@ModelAttribute("user") Userdto user, Model model) {
         if (user.getUserid() == null || user.getUserid().isEmpty()) {
