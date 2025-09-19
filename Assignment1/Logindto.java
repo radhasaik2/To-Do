@@ -1,8 +1,11 @@
 package in.spring.wmvc;
 
 public class Logindto {
+	private String loginid;
 	private String email;
 	private String password;
+	
+	
 	public String getEmail() {
 		return email;
 	}
@@ -15,6 +18,11 @@ public class Logindto {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+	public String getLoginid() {
+		return loginid;
+	}
+	public void setLoginid(String loginid) {
+		this.loginid = loginid;
+	}
 	
 }
