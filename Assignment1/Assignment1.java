@@ -7,30 +7,82 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @SessionAttributes("user")
 public class Assignment {
+    
+    @GetMapping("/")
+    public String home() {
+        return "index"; 
+    }
+    
     @GetMapping("/signup")
     public String openSignup() {
         return "signup";
     }
+    
     @GetMapping("/login")
-    public String openLogin() {
+    public String openLogin(Model model) {
+        model.addAttribute("logindto", new Logindto());
         return "login";
     }
+    
     @ModelAttribute("user")
     public Userdto user() {
         return new Userdto();
     }
+    
     @PostMapping("/signupdata")
-    public String postSignupData(@ModelAttribute("user") Userdto user) {
-        return "redirect:/login";
+    public String postSignupData(@ModelAttribute("user") Userdto user, Model model) {
+        try {
+            if (user.getName() == null || user.getName().trim().isEmpty() ||
+                user.getEmail() == null || user.getEmail().trim().isEmpty() ||
+                user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+                
+                model.addAttribute("error", "All fields are required");
+                return "signup";
+            }
+            
+            int generatedId = Assignment1dao.insertUsers(user);
+            user.setUserid(String.valueOf(generatedId));
+            return "redirect:/login";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "signup";
+        }
     }
+    
     @PostMapping("/logindata")
-    public String postLoginData(@ModelAttribute Logindto logs,@ModelAttribute("user") Userdto users,Model model) {
-        if (users.getEmail().equals(logs.getEmail()) &&users.getPassword().equals(logs.getPassword())) {
-            model.addAttribute("user", users);
-            return "profile";
-        } else {
-        	model.addAttribute("error", "Invalid email or password");
+    public String postLoginData(@ModelAttribute Logindto logs, @ModelAttribute("user") Userdto users, Model model) {
+        try {
+            if (logs.getEmail() == null || logs.getEmail().trim().isEmpty() ||
+                logs.getPassword() == null || logs.getPassword().trim().isEmpty()) {
+                model.addAttribute("error", "Email and password are required");
+                return "login";
+            }
+            
+            Userdto dbUser = Assignment1dao.getUserByEmail(logs.getEmail());
+            
+            if (dbUser != null && PasswordUtil.checkPassword(logs.getPassword(), dbUser.getPassword())) {
+                users.setUserid(dbUser.getUserid());
+                users.setName(dbUser.getName());
+                users.setEmail(dbUser.getEmail());
+                users.setPassword(""); 
+                model.addAttribute("user", users);
+                model.addAttribute("message", "User login successful");
+                return "profile";
+            } else {
+                model.addAttribute("error", "Invalid email or password");
+                return "login";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "An error occurred during login");
             return "login";
         }
+    }
+    
+    @GetMapping("/profile")
+    public String showProfile(@ModelAttribute("user") Userdto user, Model model) {
+        if (user.getUserid() == null || user.getUserid().isEmpty()) {
+            return "redirect:/login";
+        }
+        return "profile";
     }
 }
