@@ -1,0 +1,40 @@
+package in.spring.wmvc;
+
+public class Moviesdto {
+    private int movieid;
+    private String title;
+    private String narration;
+    private int releaseyear;
+    private double averageRating;
+    
+    public int getMovieid() {
+        return movieid;
+    }
+    public void setMovieid(int movieid) {
+        this.movieid = movieid;
+    }
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public String getNarration() {
+        return narration;
+    }
+    public void setNarration(String narration) {
+        this.narration = narration;
+    }
+    public int getReleaseyear() {
+        return releaseyear;
+    }
+    public void setReleaseyear(int releaseyear) {
+        this.releaseyear = releaseyear;
+    }
+    public double getAverageRating() {
+        return averageRating;
+    }
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+}
