@@ -8,7 +8,11 @@
 <title>Insert title here</title>
 </head>
 <body>
-${user.getName()}<br>
-${user.getEmail()}
+<% if (request.getAttribute("message") != null) { %>
+    <p>${message}</p>
+<% } %>
+<p>User ID: ${user.userid}</p>
+<p>Name: ${user.name}</p>
+<p>Email: ${user.email}</p>
 </body>
 </html>
