@@ -1,10 +1,17 @@
 package in.spring.wmvc;
 
 public class Userdto {
-
+		private String userid;
 		private String name;
 		private String email;
 		private String password;
+		
+		public String getUserid() {
+			return userid;
+		}
+		public void setUserid(String userid) {
+			this.userid = userid;
+		}
 		public String getName() {
 			return name;
 		}
