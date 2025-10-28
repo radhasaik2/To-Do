@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: Arial;
+        margin: 0;
+      }
+      header {
+        background-color: black;
+        padding: 3px 13px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .bar {
+        display: block;
+        width: 25px;
+        height: 5px;
+        margin: 3px auto;
+        background-color: white;
+      }
+      .menu-closed {
+        display: none;
+      }
+      .menu-open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 15px;
+      }
+      #span1 {
+        background-color: green;
+        padding: 15px 23px;
+      }
+      #span2 {
+        background-color: black;
+        padding: 15px 23px;
+      }
+      #span3 {
+        background-color: dimgrey;
+        padding: 15px 23px;
+      }
+      #span4 {
+        background-color: black;
+        padding: 15px 23px;
+      }
+      .home {
+        color: white;
+      }
+      .news {
+        color: white;
+      }
+      .contact {
+        color: white;
+      }
+      .about {
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
